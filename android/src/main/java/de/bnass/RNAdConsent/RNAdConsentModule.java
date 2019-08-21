@@ -161,68 +161,73 @@ public class RNAdConsentModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void showGoogleConsentForm(final ReadableMap config, final Promise promise) {
-        try {
-            String privacyUrlString = config.getString("privacyPolicyUrl");
-            URL privacyUrl;
-            try {
-                privacyUrl = new URL(privacyUrlString);
-            } catch (MalformedURLException e) {
-                promise.reject(e);
-                return;
-            }
-
-            Boolean shouldOfferAdFree = config.getBoolean("shouldOfferAdFree");
-
-            ConsentFormListener listener = new ConsentFormListener() {
-                @Override
-                public void onConsentFormLoaded() {
-                    showConsentForm();
-                }
-
-                @Override
-                public void onConsentFormOpened() {
-                }
-
-                @Override
-                public void onConsentFormClosed(ConsentStatus consentStatus,
-                                                Boolean userPrefersAdFree) {
-                    if (userPrefersAdFree) {
-                        promise.resolve(PREFERS_AD_FREE);
-                    } else {
-                        if (consentStatus.equals(ConsentStatus.PERSONALIZED)) {
-                            promise.resolve(PERSONALIZED);
-                        } else if (consentStatus.equals(ConsentStatus.NON_PERSONALIZED)) {
-                            promise.resolve(NON_PERSONALIZED);
-                        } else {
-                            promise.resolve(UNKNOWN);
-                        }
+        getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String privacyUrlString = config.getString("privacyPolicyUrl");
+                    URL privacyUrl;
+                    try {
+                        privacyUrl = new URL(privacyUrlString);
+                    } catch (MalformedURLException e) {
+                        promise.reject(e);
+                        return;
                     }
-                }
 
-                @Override
-                public void onConsentFormError(String errorDescription) {
-                    promise.reject(errorDescription);
-                }
-            };
+                    Boolean shouldOfferAdFree = config.getBoolean("shouldOfferAdFree");
 
-            if (shouldOfferAdFree) {
-                form = new ConsentForm.Builder(getCurrentActivity(), privacyUrl)
-                        .withListener(listener)
-                        .withAdFreeOption()
-                        .withNonPersonalizedAdsOption()
-                        .withPersonalizedAdsOption()
-                        .build();
-            } else {
-                form = new ConsentForm.Builder(getCurrentActivity(), privacyUrl)
-                        .withListener(listener)
-                        .withNonPersonalizedAdsOption()
-                        .withPersonalizedAdsOption()
-                        .build();
+                    ConsentFormListener listener = new ConsentFormListener() {
+                        @Override
+                        public void onConsentFormLoaded() {
+                            showConsentForm();
+                        }
+
+                        @Override
+                        public void onConsentFormOpened() {
+                        }
+
+                        @Override
+                        public void onConsentFormClosed(ConsentStatus consentStatus,
+                                                        Boolean userPrefersAdFree) {
+                            if (userPrefersAdFree) {
+                                promise.resolve(PREFERS_AD_FREE);
+                            } else {
+                                if (consentStatus.equals(ConsentStatus.PERSONALIZED)) {
+                                    promise.resolve(PERSONALIZED);
+                                } else if (consentStatus.equals(ConsentStatus.NON_PERSONALIZED)) {
+                                    promise.resolve(NON_PERSONALIZED);
+                                } else {
+                                    promise.resolve(UNKNOWN);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onConsentFormError(String errorDescription) {
+                            promise.reject(errorDescription);
+                        }
+                    };
+
+                    if (shouldOfferAdFree) {
+                        form = new ConsentForm.Builder(getCurrentActivity(), privacyUrl)
+                                .withListener(listener)
+                                .withAdFreeOption()
+                                .withNonPersonalizedAdsOption()
+                                .withPersonalizedAdsOption()
+                                .build();
+                    } else {
+                        form = new ConsentForm.Builder(getCurrentActivity(), privacyUrl)
+                                .withListener(listener)
+                                .withNonPersonalizedAdsOption()
+                                .withPersonalizedAdsOption()
+                                .build();
+                    }
+
+                    form.load();
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
             }
-
-            form.load();
-        } catch (Exception e) {
-            promise.reject(e);
-        }
+        })
     }
 }

@@ -1,12 +1,6 @@
 #import "RNAdConsent.h"
-#import "RCTBridgeModule.h"
-#if __has_include(<React/RCTConvert.h>)
+#import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
-#elif __has_include("RCTConvert.h")
-#import "RCTConvert.h"
-#else
-#import "React/RCTConvert.h" // Required when used as a Pod in a Swift project
-#endif
 #import <GoogleMobileAds/GoogleMobileAds.h>
 #import <PersonalizedAdConsent/PersonalizedAdConsent.h>
 

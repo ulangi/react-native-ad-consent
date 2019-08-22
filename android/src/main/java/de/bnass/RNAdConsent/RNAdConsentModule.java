@@ -228,6 +228,6 @@ public class RNAdConsentModule extends ReactContextBaseJavaModule {
                     promise.reject(e);
                 }
             }
-        })
+        });
     }
 }

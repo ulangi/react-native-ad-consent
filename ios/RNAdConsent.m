@@ -3,14 +3,19 @@
 #import <React/RCTConvert.h>
 #import <GoogleMobileAds/GoogleMobileAds.h>
 #import <PersonalizedAdConsent/PersonalizedAdConsent.h>
+#import <Foundation/Foundation.h>
 
 @implementation RNAdConsent
 
-- (dispatch_queue_t)methodQueue {
+#pragma mark - Module setup
+
+- (dispatch_queue_t)methodQueue
+{
   return dispatch_get_main_queue();
 }
 
-+ (BOOL)requiresMainQueueSetup {
++ (BOOL)requiresMainQueueSetup
+{
   return YES;
 }
 
@@ -30,9 +35,10 @@ NSString *const UNKNOWN_STATUS = @"unknown";
   };
 }
 
-RCT_EXPORT_METHOD(isRequestLocationInEeaOrUnknown
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+#pragma mark - Public API
+
+RCT_EXPORT_METHOD(isRequestLocationInEeaOrUnknown:(RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject) {
   @try {
     resolve([NSNumber numberWithBool:PACConsentInformation.sharedInstance
                                          .requestLocationInEEAOrUnknown]);
@@ -42,10 +48,9 @@ RCT_EXPORT_METHOD(isRequestLocationInEeaOrUnknown
   }
 }
 
-RCT_EXPORT_METHOD(setTagForUnderAgeOfConsent
-                  : (BOOL)isUnderAgeOfConsent resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(setTagForUnderAgeOfConsent:(BOOL)isUnderAgeOfConsent
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
   @try {
     PACConsentInformation.sharedInstance.tagForUnderAgeOfConsent =
         isUnderAgeOfConsent;
@@ -56,9 +61,8 @@ RCT_EXPORT_METHOD(setTagForUnderAgeOfConsent
   }
 }
 
-RCT_EXPORT_METHOD(getAdProviders
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getAdProviders:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
   @try {
     NSArray *adProviders = PACConsentInformation.sharedInstance.adProviders;
     NSMutableArray *adProvidersArray = [NSMutableArray array];
@@ -80,10 +84,9 @@ RCT_EXPORT_METHOD(getAdProviders
   }
 }
 
-RCT_EXPORT_METHOD(setConsentStatus
-                  : (NSString *)status resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(setConsentStatus:(NSString *)status
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
   @try {
     if ([status isEqualToString:PERSONALIZED]) {
       PACConsentInformation.sharedInstance.consentStatus =
@@ -114,10 +117,9 @@ RCT_EXPORT_METHOD(setConsentStatus
   }
 }
 
-RCT_EXPORT_METHOD(addTestDevice
-                  : (NSString *)deviceId resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(addTestDevice:(NSString *)deviceId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
   @try {
     PACConsentInformation.sharedInstance.debugIdentifiers = @[ deviceId ];
     resolve(@(YES));
@@ -126,10 +128,26 @@ RCT_EXPORT_METHOD(addTestDevice
   }
 }
 
-RCT_EXPORT_METHOD(requestConsentInfoUpdate
-                  : (NSDictionary *)options resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(setDebugGeography:(NSString *)geo
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  @try {
+    if ([geo isEqualToString:@"EEA"]) {
+      PACConsentInformation.sharedInstance.debugGeography = PACDebugGeographyEEA;
+    }
+    else {
+      PACConsentInformation.sharedInstance.debugGeography = PACDebugGeographyNotEEA;
+    }
+    
+    resolve(@(YES));
+  } @catch (NSError *error) {
+    reject(@"setDebugGeography_error", error.localizedDescription, error);
+  }
+}
+
+RCT_EXPORT_METHOD(requestConsentInfoUpdate:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
   @try {
     [PACConsentInformation.sharedInstance
         requestConsentInfoUpdateForPublisherIdentifiers:@[
@@ -164,10 +182,9 @@ RCT_EXPORT_METHOD(requestConsentInfoUpdate
   }
 }
 
-RCT_EXPORT_METHOD(showGoogleConsentForm
-                  : (NSDictionary *)options resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(showGoogleConsentForm:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
   @try {
     NSString *privacyUrlString =
         [RCTConvert NSString:options[@"privacyPolicyUrl"]];
@@ -221,4 +238,6 @@ RCT_EXPORT_METHOD(showGoogleConsentForm
   }
 }
 
+
 @end
+

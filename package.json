@@ -1,6 +1,8 @@
 {
   "name": "@ulangi/react-native-ad-consent",
-  "version": "1.0.5",
+  "version": "2.0.2-patch.1",
+  "name": "react-native-ad-consent",
+  "version": "2.0.2",
   "description": "Uses the Google Mobile Ads Consent SDK to ask users for GDPR compliant ad consent. Supports iOS and Android.",
   "main": "src/index.js",
   "keywords": [
@@ -20,7 +22,7 @@
   "license": "MIT",
   "homepage": "https://github.com/birgernass/react-native-ad-consent.git",
   "peerDependencies": {
-    "react-native": "^0.41.2"
+    "react-native": ">=0.60.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",

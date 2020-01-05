@@ -1,6 +1,9 @@
 {
   "name": "@ulangi/react-native-ad-consent",
   "version": "2.0.2-patch.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Uses the Google Mobile Ads Consent SDK to ask users for GDPR compliant ad consent. Supports iOS and Android.",
   "main": "src/index.js",
   "keywords": [
